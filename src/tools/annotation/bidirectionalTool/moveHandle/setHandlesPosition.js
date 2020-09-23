@@ -18,6 +18,8 @@ export default function(handle, eventData, data, distanceFromTool) {
     y: eventData.currentPoints.image.y + distanceFromTool.y,
   };
 
+  console.log('===zj index:', handle.index);
+
   if (handle.index === 0) {
     // If long-axis start point is moved
     result = moveLongLine(proposedPoint, data, eventData, data.handles.end);
@@ -95,7 +97,11 @@ export default function(handle, eventData, data, distanceFromTool) {
         proposedPoint,
         data,
         eventData,
-        data.handles.perpendicularEnd
+        data.handles.perpendicularEnd,
+        data.handles.perpendicularStart,
+        data.handles.perpendicularEnd,
+        intersection,
+        false
       );
 
       if (!movedPoint) {
@@ -161,12 +167,157 @@ export default function(handle, eventData, data, distanceFromTool) {
         proposedPoint,
         data,
         eventData,
-        data.handles.perpendicularStart
+        data.handles.perpendicularStart,
+        data.handles.perpendicularStart,
+        data.handles.perpendicularEnd,
+        intersection,
+        false
       );
 
       if (!movedPoint) {
         eventData.currentPoints.image.x = data.handles.perpendicularEnd.x;
         eventData.currentPoints.image.y = data.handles.perpendicularEnd.y;
+      }
+    }
+  } else if (handle.index === 4) {
+    outOfBounds = false;
+    // If second perpendicular start point is moved
+    longLine.start = {
+      x: data.handles.start.x,
+      y: data.handles.start.y,
+    };
+    longLine.end = {
+      x: data.handles.end.x,
+      y: data.handles.end.y,
+    };
+
+    perpendicularLine.start = {
+      x: data.handles.secondPerpendicularEnd.x,
+      y: data.handles.secondPerpendicularEnd.y,
+    };
+    perpendicularLine.end = {
+      x: proposedPoint.x,
+      y: proposedPoint.y,
+    };
+
+    intersection = external.cornerstoneMath.lineSegment.intersectLine(
+      longLine,
+      perpendicularLine
+    );
+    if (!intersection) {
+      perpendicularLine.end = {
+        x: data.handles.secondPerpendicularStart.x,
+        y: data.handles.secondPerpendicularStart.y,
+      };
+
+      intersection = external.cornerstoneMath.lineSegment.intersectLine(
+        longLine,
+        perpendicularLine
+      );
+
+      d1 = external.cornerstoneMath.point.distance(
+        intersection,
+        data.handles.start
+      );
+      d2 = external.cornerstoneMath.point.distance(
+        intersection,
+        data.handles.end
+      );
+
+      if (!intersection || d1 < 3 || d2 < 3) {
+        outOfBounds = true;
+      }
+    }
+
+    movedPoint = false;
+
+    if (!outOfBounds) {
+      movedPoint = movePerpendicularLine(
+        proposedPoint,
+        data,
+        eventData,
+        data.handles.secondPerpendicularEnd,
+        data.handles.secondPerpendicularStart,
+        data.handles.secondPerpendicularEnd,
+        intersection,
+        true
+      );
+
+      if (!movedPoint) {
+        eventData.currentPoints.image.x =
+          data.handles.secondPerpendicularStart.x;
+        eventData.currentPoints.image.y =
+          data.handles.secondPerpendicularStart.y;
+      }
+    }
+  } else if (handle.index === 5) {
+    outOfBounds = false;
+
+    // If second perpendicular end point is moved
+    longLine.start = {
+      x: data.handles.start.x,
+      y: data.handles.start.y,
+    };
+    longLine.end = {
+      x: data.handles.end.x,
+      y: data.handles.end.y,
+    };
+
+    perpendicularLine.start = {
+      x: data.handles.secondPerpendicularStart.x,
+      y: data.handles.secondPerpendicularStart.y,
+    };
+    perpendicularLine.end = {
+      x: proposedPoint.x,
+      y: proposedPoint.y,
+    };
+
+    intersection = external.cornerstoneMath.lineSegment.intersectLine(
+      longLine,
+      perpendicularLine
+    );
+    if (!intersection) {
+      perpendicularLine.end = {
+        x: data.handles.secondPerpendicularEnd.x,
+        y: data.handles.secondPerpendicularEnd.y,
+      };
+
+      intersection = external.cornerstoneMath.lineSegment.intersectLine(
+        longLine,
+        perpendicularLine
+      );
+
+      d1 = external.cornerstoneMath.point.distance(
+        intersection,
+        data.handles.start
+      );
+      d2 = external.cornerstoneMath.point.distance(
+        intersection,
+        data.handles.end
+      );
+
+      if (!intersection || d1 < 3 || d2 < 3) {
+        outOfBounds = true;
+      }
+    }
+
+    movedPoint = false;
+
+    if (!outOfBounds) {
+      movedPoint = movePerpendicularLine(
+        proposedPoint,
+        data,
+        eventData,
+        data.handles.secondPerpendicularStart,
+        data.handles.secondPerpendicularStart,
+        data.handles.secondPerpendicularEnd,
+        intersection,
+        true
+      );
+
+      if (!movedPoint) {
+        eventData.currentPoints.image.x = data.handles.secondPerpendicularEnd.x;
+        eventData.currentPoints.image.y = data.handles.secondPerpendicularEnd.y;
       }
     }
   }

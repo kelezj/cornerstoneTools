@@ -34,6 +34,7 @@ export default class BidirectionalTool extends BaseAnnotationTool {
         changeMeasurementLocationCallback: emptyLocationCallback,
         getMeasurementLocationCallback: emptyLocationCallback,
         textBox: '',
+        secondTextBox: '',
         shadow: '',
         drawHandles: true,
         drawHandlesOnHover: true,
@@ -60,13 +61,13 @@ export default class BidirectionalTool extends BaseAnnotationTool {
   updateCachedStats(image, element, data) {
     const pixelSpacing = getPixelSpacing(image);
     const {
-      longestDiameter,
-      shortestDiameter,
+      firstPerpendicularLength,
+      secondPerpendicularLength,
     } = calculateLongestAndShortestDiameters(data, pixelSpacing);
 
     // Set measurement text to show lesion table
-    data.longestDiameter = longestDiameter;
-    data.shortestDiameter = shortestDiameter;
+    data.firstPerpendicularLength = firstPerpendicularLength;
+    data.secondPerpendicularLength = secondPerpendicularLength;
     data.invalidated = false;
   }
 }

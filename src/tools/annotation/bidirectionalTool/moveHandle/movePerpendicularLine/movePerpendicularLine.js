@@ -19,17 +19,15 @@ export default function movePerpendicularLine(
   proposedPoint,
   measurementData,
   eventData,
-  fixedPoint
+  fixedPoint,
+  perpendicularStart,
+  perpendicularEnd,
+  intersection,
+  isSecond
 ) {
   const { lineSegment } = external.cornerstoneMath;
   const baseData = getBaseData(measurementData, eventData, fixedPoint);
-  const {
-    columnPixelSpacing,
-    rowPixelSpacing,
-    start,
-    longLine,
-    intersection,
-  } = baseData;
+  const { columnPixelSpacing, rowPixelSpacing, start, longLine } = baseData;
 
   // Stop here if the long line has no length
   if (!lineHasLength(columnPixelSpacing, rowPixelSpacing, longLine)) {
@@ -45,7 +43,13 @@ export default function movePerpendicularLine(
   );
 
   // Get a helper line to calculate the intersection
-  const helperLine = getHelperLine(baseData, proposedPoint, vector);
+  const helperLine = getHelperLine(
+    baseData,
+    proposedPoint,
+    vector,
+    perpendicularEnd,
+    fixedPoint
+  );
 
   // Find the new intersection in the long line
   const newIntersection = lineSegment.intersectLine(longLine, helperLine);
@@ -60,14 +64,29 @@ export default function movePerpendicularLine(
     baseData,
     newIntersection,
     helperLine,
-    vector
+    vector,
+    fixedPoint,
+    perpendicularStart,
+    perpendicularEnd,
+    isSecond
   );
 
   // Change the position of the perpendicular line handles
-  measurementData.handles.perpendicularStart.x = newLine.start.x;
-  measurementData.handles.perpendicularStart.y = newLine.start.y;
-  measurementData.handles.perpendicularEnd.x = newLine.end.x;
-  measurementData.handles.perpendicularEnd.y = newLine.end.y;
+  if (typeof isSecond === 'boolean') {
+    if (isSecond === false) {
+      measurementData.handles.perpendicularStart.x = newLine.start.x;
+      measurementData.handles.perpendicularStart.y = newLine.start.y;
+      measurementData.handles.perpendicularEnd.x = newLine.end.x;
+      measurementData.handles.perpendicularEnd.y = newLine.end.y;
+    } else {
+      measurementData.handles.secondPerpendicularStart.x = newLine.start.x;
+      measurementData.handles.secondPerpendicularStart.y = newLine.start.y;
+      measurementData.handles.secondPerpendicularEnd.x = newLine.end.x;
+      measurementData.handles.secondPerpendicularEnd.y = newLine.end.y;
+    }
+  } else {
+    return false;
+  }
 
   return true;
 }

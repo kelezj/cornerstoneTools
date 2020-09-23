@@ -13,13 +13,14 @@ import getDirectionMultiplier from './getDirectionMultiplier';
  *
  * @returns {*} Returns the helper line containing the start and end points
  */
-export default function getHelperLine(baseData, proposedPoint, vector) {
-  const {
-    columnPixelSpacing,
-    rowPixelSpacing,
-    perpendicularEnd,
-    fixedPoint,
-  } = baseData;
+export default function getHelperLine(
+  baseData,
+  proposedPoint,
+  vector,
+  perpendicularEnd,
+  fixedPoint
+) {
+  const { columnPixelSpacing, rowPixelSpacing } = baseData;
 
   // Create a helper line to find the intesection point in the long line
   const highNumber = Number.MAX_SAFE_INTEGER;

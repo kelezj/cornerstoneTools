@@ -10,14 +10,17 @@ import getDistanceWithPixelSpacing from '../../utils/getDistanceWithPixelSpacing
  *
  * @returns {*} Returns a line object with the updated handles position
  */
-export default function updatePerpendicularLine(baseData, mid) {
+export default function updatePerpendicularLine(baseData, mid, secondMid) {
   const {
     columnPixelSpacing,
     rowPixelSpacing,
     start,
     perpendicularStart,
     perpendicularEnd,
+    secondPerpendicularStart,
+    secondPerpendicularEnd,
     intersection,
+    secondIntersection,
     fixedPoint,
   } = baseData;
 
@@ -36,6 +39,24 @@ export default function updatePerpendicularLine(baseData, mid) {
     perpendicularEnd,
     intersection
   );
+
+  // Get the second original distance from perpendicular start handle to intersection
+  const secondDistancePS = getDistanceWithPixelSpacing(
+    columnPixelSpacing,
+    rowPixelSpacing,
+    secondPerpendicularStart,
+    secondIntersection
+  );
+
+  // Get the second original distance from perpendicular end handle to intersection
+  const secondDistancePE = getDistanceWithPixelSpacing(
+    columnPixelSpacing,
+    rowPixelSpacing,
+    secondPerpendicularEnd,
+    secondIntersection
+  );
+
+  console.log();
 
   // Inclination of the perpendicular line
   const vector = getLineVector(
@@ -59,6 +80,14 @@ export default function updatePerpendicularLine(baseData, mid) {
     end: {
       x: mid.x + vector.y * distancePE * rowMultiplier * -1,
       y: mid.y + vector.x * distancePE * columnMultiplier,
+    },
+    secondPStart: {
+      x: secondMid.x + vector.y * secondDistancePS * rowMultiplier,
+      y: secondMid.y + vector.x * secondDistancePS * columnMultiplier * -1,
+    },
+    secondPEnd: {
+      x: secondMid.x + vector.y * secondDistancePE * rowMultiplier * -1,
+      y: secondMid.y + vector.x * secondDistancePE * columnMultiplier,
     },
   };
 }

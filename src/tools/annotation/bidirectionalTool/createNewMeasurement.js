@@ -25,8 +25,19 @@ export default function(mouseEventData) {
       start: getHandle(x, y, 0),
       end: getHandle(x, y, 1, { active: true }),
       perpendicularStart: getHandle(x, y, 2, { locked: true }),
-      perpendicularEnd: getHandle(x, y, 3),
+      perpendicularEnd: getHandle(x, y, 3, { locked: true }),
       textBox: getHandle(x - 50, y - 70, null, {
+        highlight: false,
+        hasMoved: true,
+        active: false,
+        movesIndependently: false,
+        drawnIndependently: true,
+        allowedOutsideImage: true,
+        hasBoundingBox: true,
+      }),
+      secondPerpendicularStart: getHandle(x, y, 4, { locked: true }),
+      secondPerpendicularEnd: getHandle(x, y, 5, { locked: true }),
+      secondTextBox: getHandle(x - 50, y + 70, null, {
         highlight: false,
         hasMoved: true,
         active: false,
@@ -38,6 +49,8 @@ export default function(mouseEventData) {
     },
     longestDiameter: 0,
     shortestDiameter: 0,
+    firstPerpendicularLength: 0,
+    secondPerpendicularLength: 0,
   };
 
   return measurementData;

@@ -32,7 +32,11 @@ export default function(evt, interactionType) {
   external.cornerstone.updateImage(element);
 
   const timestamp = new Date().getTime();
-  const { end, perpendicularStart } = measurementData.handles;
+  const {
+    end,
+    perpendicularStart,
+    secondPerpendicularStart,
+  } = measurementData.handles;
 
   moveNewHandle(
     eventData,
@@ -42,11 +46,15 @@ export default function(evt, interactionType) {
     {},
     interactionType,
     () => {
-      const { handles, longestDiameter, shortestDiameter } = measurementData;
+      const {
+        handles,
+        firstPerpendicularLength,
+        secondPerpendicularLength,
+      } = measurementData;
       const hasHandlesOutside = anyHandlesOutsideImage(eventData, handles);
-      const longestDiameterSize = parseFloat(longestDiameter) || 0;
-      const shortestDiameterSize = parseFloat(shortestDiameter) || 0;
-      const isTooSmal = longestDiameterSize < 1 || shortestDiameterSize < 1;
+      const firstDiameterSize = parseFloat(firstPerpendicularLength) || 0;
+      const secondDiameterSize = parseFloat(secondPerpendicularLength) || 0;
+      const isTooSmal = firstDiameterSize < 1 || secondDiameterSize < 1;
       const isTooFast = new Date().getTime() - timestamp < 150;
 
       if (hasHandlesOutside || isTooSmal || isTooFast) {
@@ -65,6 +73,7 @@ export default function(evt, interactionType) {
       // Update perpendicular line and disconnect it from the long-line
       updatePerpendicularLineHandles(eventData, measurementData);
       perpendicularStart.locked = false;
+      secondPerpendicularStart.locked = false;
 
       measurementData.invalidated = true;
 

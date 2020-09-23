@@ -1,3 +1,4 @@
+import { constant } from 'lodash';
 import getDirectionMultiplier from './getDirectionMultiplier';
 import getMovingPoint from './getMovingPoint';
 
@@ -16,16 +17,21 @@ export default function updatePerpendicularLine(
   baseData,
   mid,
   helperLine,
-  vector
+  vector,
+  fixedPoint,
+  perpendicularStart,
+  perpendicularEnd,
+  isSecond
 ) {
   const {
     columnPixelSpacing,
     rowPixelSpacing,
-    fixedPoint,
-    perpendicularStart,
-    perpendicularEnd,
-    distanceToFixed,
+    firstDistanceToFixed,
+    secondDistanceToFixed,
   } = baseData;
+
+  const distanceToFixed =
+    isSecond === false ? firstDistanceToFixed : secondDistanceToFixed;
 
   // Get the multiplier
   const multiplier =

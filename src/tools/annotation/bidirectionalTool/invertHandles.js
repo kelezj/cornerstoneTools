@@ -18,7 +18,14 @@ const swapHandles = (a, b) => {
 export default function invertHandles(eventData, measurementData, handle) {
   const { rowPixelSpacing, columnPixelSpacing } = eventData.image;
   const { handles } = measurementData;
-  const { start, end, perpendicularStart, perpendicularEnd } = handles;
+  const {
+    start,
+    end,
+    perpendicularStart,
+    perpendicularEnd,
+    secondPerpendicularStart,
+    secondPerpendicularEnd,
+  } = handles;
 
   // Calculate the long axis length
   const dx = (start.x - end.x) * (columnPixelSpacing || 1);
@@ -36,6 +43,8 @@ export default function invertHandles(eventData, measurementData, handle) {
     swapHandles(start, end);
     swapHandles(start, perpendicularStart);
     swapHandles(end, perpendicularEnd);
+    swapHandles(start, secondPerpendicularStart);
+    swapHandles(end, secondPerpendicularEnd);
 
     return Object.values(handles).find(h => h.moving === true);
   }

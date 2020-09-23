@@ -25,6 +25,8 @@ export default function getBaseData(measurementData, eventData, fixedPoint) {
     end,
     perpendicularStart,
     perpendicularEnd,
+    secondPerpendicularStart,
+    secondPerpendicularEnd,
   } = measurementData.handles;
   const { columnPixelSpacing = 1, rowPixelSpacing = 1 } = eventData.image;
 
@@ -32,12 +34,33 @@ export default function getBaseData(measurementData, eventData, fixedPoint) {
   const perpendicularLine = createLine(perpendicularStart, perpendicularEnd);
   const intersection = lineSegment.intersectLine(longLine, perpendicularLine);
 
-  const distanceToFixed = getDistanceWithPixelSpacing(
+  const secondPerpendicularLine = createLine(
+    secondPerpendicularStart,
+    secondPerpendicularEnd
+  );
+  const secondIntersection = lineSegment.intersectLine(
+    longLine,
+    secondPerpendicularLine
+  );
+
+  const firstDistanceToFixed = getDistanceWithPixelSpacing(
     columnPixelSpacing,
     rowPixelSpacing,
     fixedPoint,
     intersection
   );
+
+  const secondDistanceToFixed = getDistanceWithPixelSpacing(
+    columnPixelSpacing,
+    rowPixelSpacing,
+    fixedPoint,
+    secondIntersection
+  );
+
+  const distanceToFixed =
+    firstDistanceToFixed > secondDistanceToFixed
+      ? firstDistanceToFixed
+      : secondDistanceToFixed;
 
   return {
     columnPixelSpacing, // Width that a pixel represents in mm
@@ -46,9 +69,14 @@ export default function getBaseData(measurementData, eventData, fixedPoint) {
     end, // End point of the long line
     perpendicularStart, // Start point of the perpendicular line
     perpendicularEnd, // End point of the perpendicular line
+    secondPerpendicularStart,
+    secondPerpendicularEnd,
     longLine, // Long line object containing the start and end points
     intersection, // Intersection point between long and perpendicular lines
+    secondIntersection,
     distanceToFixed, // Distance from intersection to the fixed point
+    firstDistanceToFixed,
+    secondDistanceToFixed,
     fixedPoint, // Opposite point from the handle that is being moved
   };
 }

@@ -51,7 +51,7 @@ export default function(evt) {
 
     // Calculate the data measurements
     if (data.invalidated === true) {
-      if (data.longestDiameter && data.shortestDiameter) {
+      if (data.firstPerpendicularLength && data.secondPerpendicularLength) {
         this.throttledUpdateCachedStats(image, element, data);
       } else {
         this.updateCachedStats(image, element, data);
@@ -68,6 +68,9 @@ export default function(evt) {
         perpendicularStart,
         perpendicularEnd,
         textBox,
+        secondPerpendicularStart,
+        secondPerpendicularEnd,
+        secondTextBox,
       } = data.handles;
 
       // Draw the measurement line
@@ -81,6 +84,18 @@ export default function(evt) {
         color,
         strokeWidth,
       });
+
+      // Draw the second measurement line
+      drawLine(
+        context,
+        element,
+        secondPerpendicularStart,
+        secondPerpendicularEnd,
+        {
+          color,
+          strokeWidth,
+        }
+      );
 
       // Draw the handles
       const handleOptions = {
@@ -99,8 +114,8 @@ export default function(evt) {
       // So that it sits beside the length tool handle
       const xOffset = 10;
       const textBoxAnchorPoints = handles => [
-        handles.start,
-        handles.end,
+        handles.perpendicularStart,
+        handles.perpendicularEnd,
         handles.perpendicularStart,
         handles.perpendicularEnd,
       ];
@@ -118,6 +133,31 @@ export default function(evt) {
         xOffset,
         true
       );
+
+      const secondTextBoxAnchorPoints = handles => [
+        handles.secondPerpendicularStart,
+        handles.secondPerpendicularEnd,
+        handles.secondPerpendicularStart,
+        handles.secondPerpendicularEnd,
+      ];
+      const secondTextLines = getSecondTextBoxText(
+        data,
+        rowPixelSpacing,
+        colPixelSpacing
+      );
+
+      drawLinkedTextBox(
+        context,
+        element,
+        secondTextBox,
+        secondTextLines,
+        data.handles,
+        secondTextBoxAnchorPoints,
+        color,
+        lineWidth,
+        xOffset,
+        true
+      );
     });
   }
 }
@@ -128,15 +168,30 @@ const getTextBoxText = (data, rowPixelSpacing, colPixelSpacing) => {
   if (!rowPixelSpacing || !colPixelSpacing) {
     suffix = ' pixels';
   }
-
-  const lengthText = ` L ${data.longestDiameter}${suffix}`;
-  const widthText = ` W ${data.shortestDiameter}${suffix}`;
+  const lengthText = ` L ${data.firstPerpendicularLength}${suffix}`;
 
   const { labels } = data;
 
   if (labels && Array.isArray(labels)) {
-    return [...labels, lengthText, widthText];
+    return [...labels, lengthText];
   }
 
-  return [lengthText, widthText];
+  return [lengthText];
+};
+
+const getSecondTextBoxText = (data, rowPixelSpacing, colPixelSpacing) => {
+  let suffix = ' mm';
+
+  if (!rowPixelSpacing || !colPixelSpacing) {
+    suffix = ' pixels';
+  }
+  const lengthText = ` L ${data.secondPerpendicularLength}${suffix}`;
+
+  const { labels } = data;
+
+  if (labels && Array.isArray(labels)) {
+    return [...labels, lengthText];
+  }
+
+  return [lengthText];
 };

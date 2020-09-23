@@ -18,21 +18,39 @@ export default function updatePerpendicularLineHandles(
     return false;
   }
 
-  let startX, startY, endX, endY;
+  let startX,
+    startY,
+    endX,
+    endY,
+    secondStartX,
+    secondStartY,
+    secondEndX,
+    secondEndY;
 
   const { start, end } = measurementData.handles;
   const { columnPixelSpacing = 1, rowPixelSpacing = 1 } = eventData.image;
 
   if (start.x === end.x && start.y === end.y) {
+    // 刚开始启点
     startX = start.x;
     startY = start.y;
     endX = end.x;
     endY = end.y;
+
+    secondStartX = start.x;
+    secondStartY = start.y;
+    secondEndX = end.x;
+    secondEndY = end.y;
   } else {
     // Mid point of long-axis line
-    const mid = {
-      x: (start.x + end.x) / 2,
-      y: (start.y + end.y) / 2,
+    // const mid = {
+    //   x: (start.x + end.x) / 2,
+    //   y: (start.y + end.y) / 2,
+    // };
+
+    const distance = {
+      x: (end.x - start.x) / 3,
+      y: (end.y - start.y) / 3,
     };
 
     // Inclination of the perpendicular line
@@ -47,16 +65,26 @@ export default function updatePerpendicularLineHandles(
     const rowMultiplier = perpendicularLineLength / (2 * rowPixelSpacing);
     const columnMultiplier = perpendicularLineLength / (2 * columnPixelSpacing);
 
-    startX = mid.x + columnMultiplier * vector.y;
-    startY = mid.y - rowMultiplier * vector.x;
-    endX = mid.x - columnMultiplier * vector.y;
-    endY = mid.y + rowMultiplier * vector.x;
+    startX = start.x + distance.x + columnMultiplier * vector.y;
+    startY = start.y + distance.y - rowMultiplier * vector.x;
+    endX = start.x + distance.x - columnMultiplier * vector.y;
+    endY = start.y + distance.y + rowMultiplier * vector.x;
+
+    secondStartX = start.x + distance.x * 2 + columnMultiplier * vector.y;
+    secondStartY = start.y + distance.y * 2 - rowMultiplier * vector.x;
+    secondEndX = start.x + distance.x * 2 - columnMultiplier * vector.y;
+    secondEndY = start.y + distance.y * 2 + rowMultiplier * vector.x;
   }
 
   measurementData.handles.perpendicularStart.x = startX;
   measurementData.handles.perpendicularStart.y = startY;
   measurementData.handles.perpendicularEnd.x = endX;
   measurementData.handles.perpendicularEnd.y = endY;
+
+  measurementData.handles.secondPerpendicularStart.x = secondStartX;
+  measurementData.handles.secondPerpendicularStart.y = secondStartY;
+  measurementData.handles.secondPerpendicularEnd.x = secondEndX;
+  measurementData.handles.secondPerpendicularEnd.y = secondEndY;
 
   return true;
 }

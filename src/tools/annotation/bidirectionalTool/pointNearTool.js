@@ -14,13 +14,24 @@ const pointNearPerpendicular = (
     start: cornerstone.pixelToCanvas(element, handles.perpendicularStart),
     end: cornerstone.pixelToCanvas(element, handles.perpendicularEnd),
   };
+  const secondLineSegment = {
+    start: cornerstone.pixelToCanvas(element, handles.secondPerpendicularStart),
+    end: cornerstone.pixelToCanvas(element, handles.secondPerpendicularEnd),
+  };
 
   const distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(
     lineSegment,
     coords
   );
+  const secondDistanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(
+    secondLineSegment,
+    coords
+  );
 
-  return distanceToPoint < distanceThreshold;
+  return (
+    distanceToPoint < distanceThreshold ||
+    secondDistanceToPoint < distanceThreshold
+  );
 };
 
 export default function(element, data, coords, interactionType = 'mouse') {
@@ -38,6 +49,10 @@ export default function(element, data, coords, interactionType = 'mouse') {
   );
 
   if (pointInsideBoundingBox(handles.textBox, coords)) {
+    return true;
+  }
+
+  if (pointInsideBoundingBox(handles.secondTextBox, coords)) {
     return true;
   }
 
